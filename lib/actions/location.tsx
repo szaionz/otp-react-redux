@@ -13,11 +13,9 @@ export const receivedPositionResponse = createAction('POSITION_RESPONSE')
 export const setLiveNavigationEnabled = createAction(
   'SET_LIVE_NAVIGATION_ENABLED'
 )
+export const setWatchPositionId = createAction('SET_WATCH_POSITION_ID')
 
 export const PLACE_EDITOR_LOCATION = 'placeeditor'
-
-// Store for the watchPosition ID
-let watchPositionId: number | null = null
 
 export function getCurrentPosition(
   intl: IntlShape,
@@ -105,11 +103,15 @@ export type GetCurrentPositionFunction = typeof getCurrentPosition
  * compared to polling with setInterval.
  */
 export function startWatchingPosition(intl: IntlShape) {
-  return function (dispatch: Dispatch): void {
+  return function (dispatch: Dispatch, getState: () => any): void {
+    // Get current watchPositionId from state to check if already watching
+    const state = getState()
+    const existingWatchId = state.otp?.location?.watchPositionId
+
     // Clear any existing watch
-    if (watchPositionId !== null) {
-      navigator.geolocation.clearWatch(watchPositionId)
-      watchPositionId = null
+    if (existingWatchId !== null && existingWatchId !== undefined) {
+      navigator.geolocation.clearWatch(existingWatchId)
+      dispatch(setWatchPositionId(null))
     }
 
     if (!navigator.geolocation) {
@@ -129,7 +131,7 @@ export function startWatchingPosition(intl: IntlShape) {
     dispatch(fetchingPosition({ type: null }))
     dispatch(setLiveNavigationEnabled(true))
 
-    watchPositionId = navigator.geolocation.watchPosition(
+    const watchId = navigator.geolocation.watchPosition(
       // On success
       (position) => {
         if (position) {
@@ -154,6 +156,7 @@ export function startWatchingPosition(intl: IntlShape) {
         }
         dispatch(receivedPositionError({ error: newError }))
         dispatch(setLiveNavigationEnabled(false))
+        dispatch(setWatchPositionId(null))
       },
       // Options
       {
@@ -163,6 +166,9 @@ export function startWatchingPosition(intl: IntlShape) {
         timeout: 10000
       }
     )
+
+    // Store the watch ID in Redux state
+    dispatch(setWatchPositionId(watchId))
   }
 }
 
@@ -170,10 +176,13 @@ export function startWatchingPosition(intl: IntlShape) {
  * Stop watching the user's position.
  */
 export function stopWatchingPosition() {
-  return function (dispatch: Dispatch): void {
-    if (watchPositionId !== null) {
-      navigator.geolocation.clearWatch(watchPositionId)
-      watchPositionId = null
+  return function (dispatch: Dispatch, getState: () => any): void {
+    const state = getState()
+    const watchId = state.otp?.location?.watchPositionId
+
+    if (watchId !== null && watchId !== undefined) {
+      navigator.geolocation.clearWatch(watchId)
+      dispatch(setWatchPositionId(null))
     }
     dispatch(setLiveNavigationEnabled(false))
   }
