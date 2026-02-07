@@ -10,8 +10,14 @@ export const addLocationSearch = createAction('ADD_LOCATION_SEARCH')
 export const receivedPositionError = createAction('POSITION_ERROR')
 export const fetchingPosition = createAction('POSITION_FETCHING')
 export const receivedPositionResponse = createAction('POSITION_RESPONSE')
+export const setLiveNavigationEnabled = createAction(
+  'SET_LIVE_NAVIGATION_ENABLED'
+)
 
 export const PLACE_EDITOR_LOCATION = 'placeeditor'
+
+// Store for the watchPosition ID
+let watchPositionId: number | null = null
 
 export function getCurrentPosition(
   intl: IntlShape,
@@ -88,5 +94,87 @@ export function getCurrentPosition(
         })
       )
     }
+  }
+}
+
+export type GetCurrentPositionFunction = typeof getCurrentPosition
+
+/**
+ * Start watching the user's position continuously.
+ * This provides more accurate and responsive live navigation
+ * compared to polling with setInterval.
+ */
+export function startWatchingPosition(intl: IntlShape) {
+  return function (dispatch: Dispatch): void {
+    // Clear any existing watch
+    if (watchPositionId !== null) {
+      navigator.geolocation.clearWatch(watchPositionId)
+      watchPositionId = null
+    }
+
+    if (!navigator.geolocation) {
+      console.log('geolocation not supported')
+      dispatch(
+        receivedPositionError({
+          error: {
+            message: intl.formatMessage({
+              id: 'actions.location.geolocationNotSupportedError'
+            })
+          }
+        })
+      )
+      return
+    }
+
+    dispatch(fetchingPosition({ type: null }))
+    dispatch(setLiveNavigationEnabled(true))
+
+    watchPositionId = navigator.geolocation.watchPosition(
+      // On success
+      (position) => {
+        if (position) {
+          dispatch(receivedPositionResponse({ position }))
+        }
+      },
+      // On error
+      (error) => {
+        console.log('error watching position', error)
+        const newError = { ...error }
+        if (error.code === 1) {
+          // i18n for user-denied location message
+          if (
+            window.location.protocol === 'https:' ||
+            window.location.host.startsWith('localhost:')
+          ) {
+            newError.message = intl.formatMessage({
+              id: 'actions.location.userDeniedPermission'
+            })
+            newError.code = error.code
+          }
+        }
+        dispatch(receivedPositionError({ error: newError }))
+        dispatch(setLiveNavigationEnabled(false))
+      },
+      // Options
+      {
+        enableHighAccuracy: true,
+        // Update position frequently for live navigation
+        maximumAge: 5000,
+        timeout: 10000
+      }
+    )
+  }
+}
+
+/**
+ * Stop watching the user's position.
+ */
+export function stopWatchingPosition() {
+  return function (dispatch: Dispatch): void {
+    if (watchPositionId !== null) {
+      navigator.geolocation.clearWatch(watchPositionId)
+      watchPositionId = null
+    }
+    dispatch(setLiveNavigationEnabled(false))
   }
 }
