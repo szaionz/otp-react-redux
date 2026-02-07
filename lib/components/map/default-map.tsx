@@ -46,6 +46,7 @@ import ElevationPointMarker from './elevation-point-marker'
 import EndpointsOverlay from './connected-endpoints-overlay'
 import GeoJsonLayer from './connected-geojson-layer'
 import ItinSummaryOverlay from './itinerary-summary-overlay'
+import LiveNavigationIndicator from './live-navigation-indicator'
 import NearbyViewDotOverlay from './nearby-view-dot-overlay'
 import ParkAndRideOverlay from './connected-park-and-ride-overlay'
 import PointPopup from './point-popup'
@@ -413,6 +414,7 @@ class DefaultMap extends Component<DefaultMapProps> {
         className="percy-hide"
         hideLayerFilters={nearbyViewActive && nearbyFilters}
       >
+        <LiveNavigationIndicator />
         <BaseMap
           baseLayer={
             baseLayerUrls?.length > 1 ? baseLayerUrls : baseLayerUrls?.[0]

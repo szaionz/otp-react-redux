@@ -40,6 +40,8 @@ actions:
       To use your current location, enable location permissions from your
       browser, and reload the page. 
     geolocationNotSupportedError: Geolocation not supported by your browser
+    liveNavigationActive: Live navigation active
+    liveNavigationStopped: Live navigation stopped
     unknownPositionError: Unknown error getting position
     userDeniedPermission: User denied permission
   map:
