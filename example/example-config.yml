@@ -50,6 +50,14 @@ api:
 #   mobile: BOTH_LOCATIONS_CHANGED
 #   default: ONE_LOCATION_CHANGED
 
+### Enable continuous live navigation tracking on mobile devices.
+### When enabled, the app will use navigator.geolocation.watchPosition()
+### for real-time position updates instead of periodic polling.
+### This provides more accurate and responsive location tracking but may
+### consume more battery. Defaults to true on mobile.
+# liveNavigation:
+#   enabled: true
+
 ### If Terms of Service is hosted at an outside link, provide it here. If translations 
 ### are provided, host each translation by including the language code (eg. en-US, fr, es) 
 ### in the URL and use {locale} to represent the language in the link below
