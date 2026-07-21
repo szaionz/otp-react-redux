@@ -118,6 +118,15 @@ export default defineConfig({
         })
       }
     },
+    {
+      name: 'copy-branding-assets',
+      writeBundle() {
+        const sourceDir = path.resolve(process.cwd(), 'branding')
+        const targetDir = path.resolve(process.cwd(), 'dist/branding')
+        fs.emptyDirSync(targetDir)
+        fs.copySync(sourceDir, targetDir)
+      }
+    },
 
     ViteYaml(),
     // Support very old libraries such as blob-stream and its dependencies
