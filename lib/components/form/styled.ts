@@ -1,9 +1,10 @@
+import '../../util/patch-location-field-utils'
 import {
   DateTimeSelector,
   Styled as TripFormClasses
 } from '@opentripplanner/trip-form'
 import { Input, MenuItemLi } from '@opentripplanner/location-field/lib/styled'
-import LocationField from '@opentripplanner/location-field'
+import LocationField from '@opentripplanner/location-field/lib'
 import styled, { css } from 'styled-components'
 
 import { blue, grey } from '../util/colors'

@@ -1,3 +1,4 @@
+import '../../../util/patch-location-field-utils'
 import {
   ClearButton,
   DropdownButton,
@@ -5,7 +6,7 @@ import {
   MenuItemLi,
   MenuItemList
 } from '@opentripplanner/location-field/lib/styled'
-import LocationField from '@opentripplanner/location-field'
+import LocationField from '@opentripplanner/location-field/lib'
 import styled from 'styled-components'
 
 import connectLocationField from '../../form/connect-location-field'

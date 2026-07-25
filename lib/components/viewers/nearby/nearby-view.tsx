@@ -1,4 +1,5 @@
 /* eslint-disable complexity */
+import '../../../util/patch-location-field-utils'
 import { connect } from 'react-redux'
 import { FormattedMessage, useIntl } from 'react-intl'
 import { Location } from '@opentripplanner/types'
@@ -8,7 +9,7 @@ import { Search } from '@styled-icons/fa-solid/Search'
 import { throttle } from '@tanstack/pacer'
 import coreUtils from '@opentripplanner/core-utils'
 import getGeocoder from '@opentripplanner/geocoder'
-import LocationField from '@opentripplanner/location-field'
+import LocationField from '@opentripplanner/location-field/lib'
 import React, {
   FormEvent,
   useCallback,
